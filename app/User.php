@@ -5,6 +5,8 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+use Illuminate\Database\Eloquent\Model;
+
 class User extends Authenticatable
 {
     use Notifiable;
@@ -26,4 +28,18 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function roles() {
+        return $this->belongsToMany('App\Role','users_roles');
+    }
+
+    public function hasRole($role) {
+        //Get array on only the role names
+        $roleNames = $this->roles->pluck('name')->toArray();
+        return in_array($role, $roleNames);
+    }
+
+    public function isAdmin() {
+        return $this->hasRole('Admin');
+    }
 }
